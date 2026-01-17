@@ -23,6 +23,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            -webkit-text-size-adjust: 100%;
         }
         .story-gradient-1 { background: linear-gradient(180deg, #FF3D68 0%, #FF8E3C 100%); }
         .story-gradient-2 { background: linear-gradient(180deg, #0072FF 0%, #00C6FF 100%); }
@@ -31,7 +32,7 @@
         .story-gradient-5 { background: linear-gradient(180deg, #6a11cb 0%, #2575fc 100%); }
         
         .glass-card {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.12);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -53,7 +54,15 @@
         .animate-float { animation: float 4s ease-in-out infinite; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         
-        /* RTL overrides */
+        /* Responsive adjustments for very small screens */
+        @media (max-height: 670px) {
+            .header-section { padding-top: calc(var(--safe-top) + 10px) !important; margin-bottom: 0.5rem !important; }
+            .header-icon { width: 2.5rem !important; height: 2.5rem !important; }
+            .header-title { font-size: 1.25rem !important; }
+            .content-p { font-size: 0.95rem !important; padding: 0.85rem !important; }
+            .interactive-box { padding: 1rem !important; margin-top: 0.5rem !important; }
+        }
+
         [dir="rtl"] .ltr { direction: ltr; }
     </style>
 <link rel="stylesheet" href="/index.css">
@@ -110,57 +119,90 @@
             const [index, setIndex] = useState(0);
             const [insights, setInsights] = useState([]);
             const [text, setText] = useState('');
+            const scrollRef = useRef(null);
             const current = STORIES_DATA[index];
+
+            useEffect(() => {
+                if (scrollRef.current) scrollRef.current.scrollTop = 0;
+            }, [index]);
 
             const handleTouch = (e) => {
                 if (e.target.closest('.interactive')) return;
                 const x = e.clientX || e.touches?.[0]?.clientX;
-                x < window.innerWidth / 2 ? (index < STORIES_DATA.length - 1 && setIndex(index + 1)) : (index > 0 && setIndex(index - 1));
+                const width = window.innerWidth;
+                if (x < width / 2) {
+                    if (index < STORIES_DATA.length - 1) setIndex(index + 1);
+                } else {
+                    if (index > 0) setIndex(index - 1);
+                }
             };
 
             return html`
                 <div className="relative w-full h-full max-w-md bg-zinc-950 flex flex-col overflow-hidden transition-all duration-700 md:rounded-[40px] md:h-[90vh] md:shadow-2xl" style=${{ height: '100dvh' }} onClick=${handleTouch}>
                     <div className="absolute inset-0 transition-all duration-700 ${current.gradientClass}"></div>
                     
-                    <div className="absolute top-8 left-0 right-0 z-[100] flex gap-1 px-4">
+                    <div className="absolute left-0 right-0 z-[100] flex gap-1 px-4" style=${{ top: 'calc(var(--safe-top) + 8px)' }}>
                         ${STORIES_DATA.map((_, i) => html`
-                            <div key=${i} className="h-[3px] flex-1 bg-white/20 rounded-full overflow-hidden">
+                            <div key=${i} className="h-[2.5px] flex-1 bg-white/20 rounded-full overflow-hidden">
                                 <div className="h-full bg-white transition-all duration-300 shadow-[0_0_10px_white]" style=${{ width: i <= index ? '100%' : '0%' }} />
                             </div>
                         `)}
                     </div>
 
-                    <div className="flex-1 flex flex-col relative z-10 pt-16 px-6">
-                        <div className="flex flex-col items-center mb-6">
-                            <div className="w-12 h-12 glass-card rounded-2xl flex items-center justify-center mb-4 animate-float">
-                                <${Icon} name=${current.icon} className="text-white w-6 h-6" />
+                    <div className="flex-1 flex flex-col relative z-10 px-5 overflow-hidden">
+                        <div className="header-section flex flex-col items-center mb-4 flex-shrink-0" style=${{ paddingTop: 'calc(var(--safe-top) + 24px)' }}>
+                            <div className="header-icon w-11 h-11 glass-card rounded-2xl flex items-center justify-center mb-3 animate-float flex-shrink-0">
+                                <${Icon} name=${current.icon} className="text-white w-5 h-5" />
                             </div>
-                            <h1 className="text-2xl font-black text-white text-center drop-shadow-lg">${current.title}</h1>
+                            <h1 className="header-title text-xl font-black text-white text-center drop-shadow-lg leading-tight">${current.title}</h1>
+                            <div className="w-6 h-0.5 bg-white/30 rounded-full mt-2"></div>
                         </div>
 
-                        <div className="space-y-4 overflow-y-auto no-scrollbar pb-32">
+                        <div ref=${scrollRef} className="flex-1 overflow-y-auto no-scrollbar space-y-3 pb-24">
                             ${current.content.map((p, i) => html`
-                                <div key=${index + '-' + i} className="animate-slide-up opacity-0" style=${{ animationDelay: (i * 0.1) + 's' }}>
-                                    <p className="text-lg font-bold text-white bg-black/20 border border-white/10 p-5 rounded-3xl backdrop-blur-md">${p}</p>
+                                <div key=${index + '-' + i} className="animate-slide-up opacity-0" style=${{ animationDelay: (i * 0.08) + 's' }}>
+                                    <p className="content-p text-[1.05rem] font-bold text-white bg-black/20 border border-white/10 p-4 rounded-[22px] backdrop-blur-md shadow-sm leading-snug">${p}</p>
                                 </div>
                             `)}
 
                             ${current.type === 'interactive' && html`
-                                <div className="interactive mt-6 p-6 glass-card rounded-[32px] space-y-4">
-                                    <textarea value=${text} onChange=${(e) => setText(e.target.value)} placeholder="כתבו כאן תובנה..." className="w-full bg-white/10 border border-white/10 text-white p-4 rounded-2xl h-24 outline-none" />
-                                    <button onClick=${() => { if(text) { setInsights([text, ...insights]); setText(''); } }} className="w-full py-3 bg-white text-black font-black rounded-2xl">פרסם</button>
-                                    <div className="space-y-2 mt-4">
-                                        ${insights.map((ins, i) => html`<div key=${i} className="text-sm text-white/80 p-3 bg-white/5 rounded-xl border border-white/5 italic">"${ins}"</div>`)}
+                                <div className="interactive-box mt-4 p-5 glass-card rounded-[28px] space-y-3 shadow-xl">
+                                    <div className="flex items-center gap-2 mb-1 px-1">
+                                        <div className="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+                                        <span className="text-[10px] font-black text-white/70 uppercase tracking-widest">תובנה אישית</span>
                                     </div>
+                                    <textarea 
+                                        value=${text} 
+                                        onChange=${(e) => setText(e.target.value)} 
+                                        placeholder="מה לקחת מהפרק הזה?" 
+                                        className="interactive w-full bg-white/10 border border-white/10 text-white p-3 rounded-xl h-20 outline-none text-sm placeholder:text-white/30" 
+                                    />
+                                    <button 
+                                        onClick=${() => { if(text) { setInsights([text, ...insights]); setText(''); } }} 
+                                        className="interactive w-full py-2.5 bg-white text-black font-black rounded-xl active:scale-95 transition-transform shadow-lg text-sm"
+                                    >
+                                        פרסם תובנה
+                                    </button>
+                                    ${insights.length > 0 && html`
+                                        <div className="space-y-2 mt-3 max-h-32 overflow-y-auto no-scrollbar">
+                                            ${insights.map((ins, i) => html`<div key=${i} className="text-[11px] text-white/90 p-2.5 bg-white/5 rounded-lg border border-white/5 italic line-clamp-3">"${ins}"</div>`)}
+                                        </div>
+                                    `}
                                 </div>
                             `}
                         </div>
                     </div>
 
-                    <div className="absolute bottom-6 left-0 right-0 flex justify-center z-50 pointer-events-none opacity-40 px-6">
-                        <div className="flex justify-between w-full text-[10px] font-black text-white uppercase tracking-widest">
+                    <div className="absolute left-0 right-0 flex justify-center z-50 pointer-events-none opacity-40 px-6" style=${{ bottom: 'calc(var(--safe-bottom) + 12px)' }}>
+                        <div className="flex justify-between w-full text-[9px] font-black text-white uppercase tracking-[0.2em]">
                             <span>הבא ←</span>
                             <span>→ הקודם</span>
+                        </div>
+                    </div>
+
+                    <div className="absolute left-0 right-0 flex justify-center pointer-events-none z-40" style=${{ bottom: 'calc(var(--safe-bottom) + 8px)' }}>
+                        <div className="px-3 py-1 bg-black/20 backdrop-blur-md rounded-full border border-white/10">
+                            <span className="text-[10px] font-black text-white/50 tracking-widest">${index + 1} / ${STORIES_DATA.length}</span>
                         </div>
                     </div>
                 </div>
