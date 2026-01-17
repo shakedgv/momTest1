@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="google" content="notranslate">
+    <title>The Mom Test - Masterclass</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200;300;400;500;600;700;800&family=Heebo:wght@100;300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --safe-top: env(safe-area-inset-top, 20px);
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
+        }
+        body {
+            font-family: 'Assistant', 'Heebo', sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100vh;
+            height: 100dvh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            touch-action: none;
+        }
+        
+        .story-gradient-1 { background: linear-gradient(180deg, #FF3D68 0%, #FF8E3C 100%); }
+        .story-gradient-2 { background: linear-gradient(180deg, #0072FF 0%, #00C6FF 100%); }
+        .story-gradient-3 { background: linear-gradient(180deg, #F53844 0%, #FEAC5E 100%); }
+        .story-gradient-4 { background: linear-gradient(180deg, #11998e 0%, #38ef7d 100%); }
+        .story-gradient-5 { background: linear-gradient(180deg, #6a11cb 0%, #2575fc 100%); }
+        
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+        }
+
+        .noise {
+            pointer-events: none;
+            position: absolute;
+            inset: 0;
+            z-index: 50;
+            opacity: 0.05;
+            mix-blend-mode: overlay;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        html, body {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
+        }
+
+        @media (max-height: 700px) {
+            .story-title { font-size: 1.15rem !important; }
+            .content-paragraph { font-size: 0.9rem !important; padding: 0.75rem !important; }
+            .header-icon { width: 2.25rem !important; height: 2.25rem !important; }
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react/": "https://esm.sh/react@^19.2.3/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <div class="noise"></div>
+    <div id="root" class="w-full h-full flex justify-center items-center"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
